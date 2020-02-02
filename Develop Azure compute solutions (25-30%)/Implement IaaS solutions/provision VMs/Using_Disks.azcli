@@ -1,0 +1,62 @@
+# 1. Login into azure account
+az login
+
+# 2. Create a resource group
+az group create --name myrg --location eastus
+
+# 3. Create a VM using the simple way
+az vm create ^
+    --resource-group myrg ^
+    --name myVM ^
+    --image UbuntuLTS ^
+    --admin-username alezanper ^
+    --generate-ssh-keys
+
+# 4. Creating a new data disk with Azure CLI and attach it to our VM. This can be done hot.
+az vm disk attach ^
+    --resource-group "myrg" ^
+    --vm-name "myVM" ^
+    --name "myDisk-VM" ^
+    --new ^
+    --size-gb 25 ^
+    --sku "Premium_LRS" 
+
+# 5. get the ip  
+az vm list-ip-addresses --name "myVM" --output table
+
+# 6. Connect to machine
+ssh alezanper@w.x.y.z
+
+# 7. Run the next commands into machine to attach the disk
+lsblk 
+
+# 8. Use fdisk to configure the new disk
+sudo fdisk /dev/sdc
+m # for help
+n # for new partition
+p # For primary
+1 # For number of partition (one)
+default
+default
+w # To write the changes
+
+# 9. Format the new partition with ext4 
+sudo mkfs -t ext4 /dev/sdc1
+
+# 10. Make a directory to mount the new disk
+sudo mkdir /data1
+
+# 11. First find the UUID for this device, in our case it's /dev/sdc1
+# check for disk data with
+sudo -i blkid | grep sdc1
+
+# 12. add to fstab the data for mounting the disk, an example: UUID="df9a23da-6cff-46e0-8e7e-e7df9e37c459" /data1  ext4  defaults      0 0 
+nano /etc/fstab
+
+# 13. mount the volume and verify the file system is mounted.
+sudo mount -a
+df -h
+
+#9 - Exit from the Linux VM
+exit
+
