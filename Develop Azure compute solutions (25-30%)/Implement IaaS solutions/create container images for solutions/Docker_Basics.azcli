@@ -1,0 +1,57 @@
+# Previous install docker from oficial webpage https://www.docker.com/products/docker-desktop 
+
+# 1. Checking Docker Version
+docker version
+
+# 2. Checking for active Docker containers
+docker ps
+
+# 3. Checking for all Docker containers (active and inactive)
+docker ps -a
+
+# 4. Checking for functionality with hello world docker
+docker run hello-world
+
+# 5. Getting alpine image (a lighty ubuntu)
+docker pull alpine
+
+# 6. Checking alpine image for a specific version (tag)
+docker pull alpine:3.7
+
+# 7. for checking what is inside the image
+docker run alpine:3.7 ls -l
+
+# 8. Running redis image, mapping ports and working on background with -d
+docker run -d -p 6379:6379 --name redis1 redis
+
+# 9. Checking for logs of container
+docker logs redis1
+
+# 10. Cheking for local images
+docker image ls
+
+# 11. Using bash in iteractive mode
+docker exec -it redis1 sh
+    redis.cli
+
+# 12. Delete container by name 
+docker rm redis1
+
+# 13. Delete image by id
+docker image rm <<id>>
+
+# 14. Run the postgres image, mapping the port, adding volume and name
+docker run -d -p 5432:5432 -v postgress-data:/var/lib/posgresql/data --name postgres1 postgres
+
+docker exec -it postgres1 sh
+    createdb -U postgres mydb
+    psql -U postgress mydb
+    CREATE TABLE people (id int, name varchar(80));
+    INSERT INTO people (id, name) VALUES (2, 'Alex');
+    \q
+
+docker volume ls
+
+docker volume rm <<volume_name>>
+
+docker container prune
