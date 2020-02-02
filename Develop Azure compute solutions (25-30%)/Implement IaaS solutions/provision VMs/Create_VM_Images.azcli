@@ -1,45 +1,60 @@
 # 1. Login into azure account
 az login
 
-#
-az vm list-ip-addresses --name "myvm" --output table
+# 2. Create a resource group
+az group create --name myrg --location eastus
 
-ssh alezanper@a.b.c.d
+# 3. Create a VM using the simple way
+az vm create ^
+    --resource-group myrg ^
+    --name myVM ^
+    --image UbuntuLTS ^
+    --admin-username alezanper ^
+    --generate-ssh-keys
 
-sudo waagent -deprovision+user -force
+# 4. get the ip  
+az vm list-ip-addresses --name "myVM" --output table
 
+# 5. Connect to machine using SSH and run the deprovision+user
+ssh alezanper@w.x.y.z
+    sudo waagent -deprovision+user -force
+    exit
+
+# 6. deallocate the VM
 az vm deallocate ^
     --resource-group "myrg" ^
-    --name "myvm"
+    --name "myVM"
 
+# 7. Checking for virtual machine status
 az vm list ^
     --show-details ^
     --output table
 
+# 8. Do the generalize process (this is destructive process)
 az vm generalize ^
-    --resource-group "myrg"
-    --name "myvm"
+    --resource-group "myrg" ^
+    --name "myVM"
 
+# 9. For creating the image
 az image create ^
-    --resource-group "myrg"
-    --name "myvm-ci"
-    --source "myvm"
+    --resource-group "myrg" ^
+    --name "myVM-image" ^
+    --source "myVM"
 
+# 10. Checking for the image list
 az image list ^
     --output table
 
+# 11. Create machine using the image, (the image must be stay in the same region)
 az vm create ^
     --resource-group "myrg" ^
-    --location "centralus" ^
-    --name "new-vm" ^
-    --image "myvm-ci" ^
+    --location "eastus" ^
+    --name "second_vm" ^
+    --image "myVM-image" ^
     --admin-username "alezanper" ^
-    --authentication-type "ssh" ^
-    --ssh-key-value ~/.ssh/id_rsa.pub
+    --generate-ssh-keys
 
+# 12. Checking for virtual machines
 az vm list ^
     --show-details ^
     --output table
-
-
-# You cannot create a vm outside the region where the image resides
