@@ -60,3 +60,75 @@ df -h
 #9 - Exit from the Linux VM
 exit
 
+
+# Resizing a disk
+# 1. Stop and deallocate the VM.
+az vm deallocate ^
+    --resource-group "myrg" ^
+    --name "myVM"
+
+# 2. Checking for disk name
+az disk list ^
+    --output table
+
+# 3. Update the disk's size to the desired size
+az disk update ^
+    --resource-group "myrg" ^
+    --name "myDisk-VM" ^
+    --size-gb 50
+
+# 4. start up the VM again
+az vm start ^
+    --resource-group "myrg" ^
+    --name "myVM" 
+
+# 5. get the ip  
+az vm list-ip-addresses --name "myVM" --output table
+
+# 6. Connect to machine
+ssh alezanper@w.x.y.z
+
+# 7. Unmount filesystem and expand the partition
+sudo nano /etc/fstab #comment out our mount
+sudo umount /data1
+sudo parted /dev/sdc
+
+# 8. Use print to find the size of the new disk, parition 1, resize, set the size to 53.7G and quit
+print 
+resizepart
+1
+53.7GB
+quit
+
+# 9. Expand the partition and mount
+sudo e2fsck -f /dev/sdc1
+sudo resize2fs /dev/sdc1
+sudo mount /dev/sdc1 /data1
+sudo nano /etc/fstab
+sudo mount -a
+
+df -h
+
+# 10. Finally clean up the resources
+az group delete ^
+    --name "myrg" 
+
+
+# Removing disk
+# 1. umount directory
+sudo nano /etc/fstab
+sudo umount /data1
+df -h | grep /data1
+exit
+
+# 2. Detaching the disk from the virtual machine.
+az vm disk detach ^
+    --resource-group "myrg" ^
+    --vm-name "myVM" ^
+    --name "myDisk-VM"
+
+# 3. Delete the disk
+az disk delete ^
+    --resource-group "psdemo-rg" ^
+    --name "psdemo-linux-1c-st0" 
+
