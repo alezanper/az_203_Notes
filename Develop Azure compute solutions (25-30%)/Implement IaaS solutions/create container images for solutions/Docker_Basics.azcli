@@ -43,6 +43,7 @@ docker image rm <<id>>
 # 14. Run the postgres image, mapping the port, adding volume and name
 docker run -d -p 5432:5432 -v postgress-data:/var/lib/posgresql/data --name postgres1 postgres
 
+# 15. Execute postgres image to create a table
 docker exec -it postgres1 sh
     createdb -U postgres mydb
     psql -U postgress mydb
@@ -50,8 +51,11 @@ docker exec -it postgres1 sh
     INSERT INTO people (id, name) VALUES (2, 'Alex');
     \q
 
+# 16. Checking for volumes
 docker volume ls
 
+# 17. Delete volume by name
 docker volume rm <<volume_name>>
 
+# 18. Delete all containers
 docker container prune

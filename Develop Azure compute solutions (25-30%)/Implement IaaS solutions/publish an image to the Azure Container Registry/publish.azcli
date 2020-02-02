@@ -1,0 +1,37 @@
+# 1. Login into azure subscription
+az login
+
+# 2. Create a resource group
+az group create ^
+    --name "myrg" ^
+    --location "centralus"
+
+# 3. Create an azure container registry
+az acr create -g "myrg" ^
+    -n "myregistrynamealex" ^
+    --sku Basic ^
+    --admin-enabled true
+
+# 4. Login into azure container registry
+az acr login -n "myregistrynamealex"
+
+# 5. Getting the login 
+az acr show -n "myregistrynamealex" --query loginserver --output tsv
+
+# 6. Checking for images
+docker image ls
+
+# 7. Selecting an image and create an alias
+docker tag <<imagename>>:<<tag>> myregistrynamealex.azurecr.io/<<imagename>>:<<tag>>
+
+# 8. push the image to acr
+docker push myregistrynamealex.azurecr.io/<<imagename>>:<<tag>>
+
+# 9. Checking repository and image already pushed
+az acr repository list -n "myregistrynamealex" -o table
+
+# 10. Show tags for certain image
+az acr repository show-tags -n "myregistrynamealex" --repository <<imagename>> -o table
+
+# 11. Delete an image registred
+az acr repository delete  -n "myregistrynamealex" -t <<imagename>>:<<tag>>
