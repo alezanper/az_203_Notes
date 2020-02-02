@@ -1,0 +1,97 @@
+# 1. Login into azure subscription
+az login
+
+# 2. Create a resource group
+az group create ^
+    --name "myrg" ^
+    --location "centralus"
+
+# 3. List resourcegroup on account
+az group list -o table
+
+# 4. Create a virtual network ans subnet
+az network vnet create ^
+    --resource-group "myrg" ^
+    --name "vnet-1" ^
+    --address-prefix "10.1.0.0/16" ^
+    --subnet-name "subnet-1" ^
+    --subnet-prefix "10.1.0.0/24"
+
+# 5. Check network
+az network vnet list -o table
+
+# 6. Create a public ip address
+az network public-ip create ^
+    --resource-group "myrg" ^
+    --name "pip-1"
+
+# 7. Create a network security group
+az network nsg create ^
+    --resource-group "myrg" ^
+    --name "nsg-1"
+
+# 8. Check the network security group
+az network nsg list -o table
+
+# 9. Create a network interface connector
+az network nic create ^
+    --resource-group "myrg" ^
+    --name "nic-1" ^
+    --vnet-name "vnet-1" ^
+    --subnet "subnet-1" ^
+    --network-security-group "nsg-1" ^
+    --public-ip-address "pip-1"
+
+# 10. Check network interface connector
+az network nic list -o table
+
+# 11. For creating a windows machine
+az vm create ^
+    --resource-group "myrg" ^
+    --location "centralus" ^
+    --name "myvm" ^
+    --nics "nic-1" ^
+    --image "win2016datacenter" ^
+    --admin-username "alezanper" ^
+    --admin-password "mycomplexpassword2020*"
+    
+# 12. For creating a Linux machine
+az vm create ^
+    --resource-group "myrg" ^
+    --location "centralus" ^
+    --name "myvm" ^
+    --nics "nic-1" ^
+    --image "rhel" ^
+    --admin-username "alezanper" ^
+    --ssh-key-value ~/.ssh/id_rsa.pub
+
+# 13. Open port 22 
+az vm open-port ^
+    --resource-group "myrg" ^
+    --name "myvm" ^
+    --port "22"
+
+# 14. Check public ip
+az vm list-ip-addresses --name "myvm" --o table
+
+# 15. To connect use the ip from the previous command
+ssh -l alezanper x.y.x.w
+
+# The simplest way to create a virtual machine is using the next commands 
+az vm create ^
+    --resource-group "myrg" ^
+    --name "ubuntuTS" ^
+    --admin.username "alezanper" ^
+    --authentication-type "ssh" ^
+    --ssh-key-value ~/.ssh/id_rsa.pub
+
+az vm open-port ^
+    --resource-group "myrg" ^
+    --name "myvm" ^
+    --port "22"
+
+az vm list-ip-addressses --name "myvm" --output table
+
+# Finally clean up the resources
+az group delete ^
+    --name "myrg" 

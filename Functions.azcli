@@ -1,0 +1,7 @@
+# supported languages c#, javascript, f#, Java and Python
+
+#github.com/Azure/azure-functions-core-tools
+
+#create a crud with functions and cosmosdb
+
+# each time that is going to call it can be added login

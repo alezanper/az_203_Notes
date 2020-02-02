@@ -1,0 +1,248 @@
+# Docker
+
+# Version
+docker version
+
+# Checking for active Docker containers
+docker ps
+
+# Checking for all Docker containers (active and inactive)
+docker ps -a
+
+# Checking for functionality with hello world docker
+docker run hello-world
+
+# Getting alpine (a lighty ubuntu)
+docker pull alpine
+
+# Checking alpine image for a specific version
+docker pull alpine:3.7
+
+# for checking what is inside the image
+docker run alpine:3.7 ls -l
+
+docker run -d -p 25565:25565 `
+    --name myserver `
+    itzg/minecraft-server:raspberrypi
+
+docker run -d -p 6379:6379 --name redis1 redis
+
+docker logs redis1
+
+docker image ls
+
+docker exec -it redis1 sh
+    redis.cli
+
+docker run .it --rm --link redis1:redis --name client1 redis sh
+
+docker rm redis1
+
+docker image ls 
+
+docker image rm <<id>>
+
+docker run -d -p 5432:5432 -v postgress-data:/var/lib/posgresql/data --name postgres1 postgres
+
+docker exec -it postgres1 sh
+    createdb -U postgres mydb
+    psql -U postgress mydb
+    CREATE TABLE people (id int, name varchar(80));
+    INSERT INTO people (id, name) VALUES (2, 'Alex');
+    \q
+
+docker volume ls
+
+docker volume rm <<volume_name>>
+
+docker container prune
+
+
+$rg = "myrg"
+az group create -n $rg -l westeurope
+
+$registryname = "myregistryname"
+az acr create -g $rg -n $registryname --sku Basic --admin-enabled true
+
+az acr login -n $registryname
+
+$loginserver = az acr show -n $registryname --query loginserver --output tsv
+
+$loginserver
+
+docker image ls
+
+docker tag <<imagename>>:<<tag>> myregistryname.azurecr.io/<<imagename>>:<<tag>>
+docker push $loginserver/<<imagename>>:<<tag>>
+
+az acr repository list -n $registryname -o table
+
+az acr repository show-tags -n $registryname --repository <<imagename>> -o table
+
+az acr repository delete  -n $registryname -t <<imagename>>:<<tag>>
+
+# creating container groups with azure cli
+
+az container create -n mycontainergroup -g myresourcegroup --image someimage:tag --ip-address public
+--dns-name-label mysite # mysite.eastus.azurecontainer.io
+--ports 80
+--os-type Windows # default is Linux
+--cpu 1 --memory 1.5
+-e name= value
+--restart-policy never # always, onfailure
+--azure-file-volume... # credentials. mount path, share-name
+
+$resourceGroup = "myrg"
+$location = "westeurope"
+az group create -n $resourceGroup -l $location
+
+$containerGroupName ="ghost-blog1"
+az container create -g $resourceGroup -n $containerGroupName ^
+    --image ghost ^
+    --ports 2368 ^
+    --ip-address public ^
+    --dns-name-label ghostaci1
+
+az container logs -n $containerGroupName -g $resourceGroup
+
+az group delete -n $resourceGroup -y
+
+###############
+
+$acrName = "myacr"
+az acr repository list -n $acrName --output table
+
+$acrServer = ac acr show -n $acrName --query loginServer --output tsv
+
+$acrPassword = az acr credentials show -n $acrName --query "passwords[0].value" -o tsv
+
+$resourceGroup = "myrg"
+
+$location = "westeurope"
+
+az group create -n $resourceGroup -l $location
+
+$storageAccountName = "mystorage123alex"
+
+az storage account create -g $resourceGroup -n $storageAccountName --sku Standard_LRS
+
+$storageConnectionString = az storage account show-connection-string -n $storageAccountName -g $resourceGroup --query connectionString -o tsv
+
+$env:AZURE_STORAGE_CONNECTION_STRING = $storageConnectionString
+
+$shareName = "myshare"
+
+az storage share create -n $shareName
+
+$storageKey = $(az storage account keys list -g $resourceGroup --account-name $storageAccountName --query "[0].value" --output tsv)
+
+$containerGroupName = "mycgn"
+
+az container create -g $resourceGroup 
+    -n $containerGroupName
+    --image $acrServer/samplewebapp:v2
+    --cpu 1 --memory 1
+    --registry-username $acrName
+    --registry-password $acrPassword
+    --azure-file-volume-account-name $storageAccountName
+    --azure-file-volume-account-key $storageKey
+    --azure-file-volume-mount-path "/home"
+    -e TestSetting = FromAzCli TestFileLocation = /home/message.txt
+    --dns-name-label "aciacr1" --ports 80
+
+az container exec -n $containerGroupName -g $resourceGroup --exec-command sh
+    echo "hello" > /home/message.txt
+
+az storage file list -s $shareName -o table
+
+az group delete -n $resourceGroup -y
+
+######################################
+# Running containers on web app forn containers
+$resourceGroup = "myrg"
+
+$location = "westeurope"
+
+az group create -n $resourceGroup -l $location
+
+$planname = "wordpressplan"
+
+az appservice plan create -n $planname -g $resourcegroup -l $location --is-linux --sku S1
+
+$mysqlservername = "mysql"
+
+$adminuser = "alex"
+
+$adminpassword = "mypassword"
+
+az mysql server create -g $resourceGroup -n $mysqlservername --admin-user $adminuser --admin-password $adminpassword -l $location --ssl-enforcement disabled --sku-name GP_Gen5_2 --version 5.7
+
+az mysql server firewall-rule create -g $resourceGroup --server $mysqlservername --name Allowappservice --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+
+$appName = "wordpress-a"
+
+$dockerrepo = "wordpress"
+
+az webapp create -n $appName -g $resourceGroup --plan $planname -i $dockerrepo
+
+$wordpressDbHost = (az mysql server show -g $resourceGroup -n $mysqlservername --query "fullyQualifiedDomainName" -o tsv)
+
+az webapp config appsettings set -n $appname -g $resourceGroup --settings WORDPRESS_DB_HOST = $wordpressDbHost WORDPRESS_DB_USER = "$adminuser@$mysqlservername" WORDPRESS_DB_PASSWORD = "$adminpassword"
+
+az webappshow -n $appName -g $resourceGroup --query "defaultHostName" -o tsv
+
+# scaling out
+
+az appservice plan update -n $planname -g $resourcegroup --number-of-workers 3
+
+az group delete --name $resourcegroup --yes --no-wait
+
+####################################
+# Service fabric tools installed from visual studio
+
+#demo in visual studio
+
+#####################################
+# kubernetes
+$resourceGroup = "myrg"
+
+$location = "westeurope"
+
+az group create -n $resourceGroup -l $location
+
+$clustername = "mycluster"
+
+az group create -n $resourcegroup -n $clustername --node-count 1 --generate-ssh-keys
+
+kubectl version --short
+
+az aks get-credentials -g $resourcegroup -n $clustername
+
+kubectl get nodes
+
+kubectl apply -f sample-app.yaml
+
+kubectl get service samplewebapp --watch
+
+kubectl get pod
+
+kubectl logs sampleapp-xxx
+
+az aks scale -g $resourcegroup -n $clustername --node-count 3
+
+kubectl get nodes
+
+kubectl apply -f example-vote.yml
+
+
+markheath/azure-deploy-manage-containers
+
+
+
+
+# For accessing the bash console in 
+interactive mode
+docker run -it alpine:3.7 sh
+
+# For 
+docker exec -it <<id_docker>> sh # for getting into docker
