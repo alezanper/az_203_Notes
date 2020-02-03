@@ -1,0 +1,45 @@
+# Use cases
+# - Build agents por CI
+# - Short long experiments
+# - Batch Jobs
+# - Elastic Scale for AKS
+#
+# Container Groups
+# - One or more containers
+# - Run on the same server ans share resouurces
+
+# Creating a container group structure 
+az container create -n mycontainergroup -g myresourcegroup --image someimage:tag --ip-address public
+--dns-name-label mysite # mysite.eastus.azurecontainer.io
+--ports 80
+--os-type Windows # default is Linux
+--cpu 1 --memory 1.5
+-e name= value
+--restart-policy never # always, onfailure
+--azure-file-volume... # credentials. mount path, share-name
+
+# Example
+# 1. Login into azure subscription
+az login
+
+# 2. Create a resource group
+az group create ^
+    --name "myrg" ^
+    --location "centralus"
+
+# 3. Create container group
+az container create -g "myrg" -n "mycontaintergroupnamealex" ^
+    --image ghost ^
+    --ports 2368 ^
+    --ip-address public ^
+    --dns-name-label ghostacialex
+
+# 4. cheking on 
+ghostacialex.centralus.azurecontainer.io:2368
+
+# 5. Checking for logs 
+az container logs -n "mycontaintergroupnamealex" ^
+    -g "myrg"
+
+# 6. Clean up resources
+az group delete -n "myrg" -y
