@@ -1,0 +1,32 @@
+# 1. Login into azure subscription
+az login
+
+# 2. Create a resource group
+az group create ^
+    --name "myrg" ^
+    --location "centralus"
+
+# 3. Create app plan
+az appservice plan create ^
+    -g "myrg" ^
+    -n "myappplanalex" ^
+    --is-linux ^
+    --number-of-workers 1 ^
+    --sku S1
+
+# 4. Create webapp
+az webapp create ^
+    -g "myrg" ^
+    -p "myappplanalex" ^
+    --runtime "PHP|5.6" ^
+    -n "mywebappalex"
+
+# 5. Checking webapp list
+az webapp list
+
+# 6. Checking URL
+mywebappalex.azurewebsites.net
+
+# Finally clean up the resources
+az group delete ^
+    --name "myrg" 
