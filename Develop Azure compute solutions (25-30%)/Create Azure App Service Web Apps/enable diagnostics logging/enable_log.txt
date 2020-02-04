@@ -1,0 +1,14 @@
+Source: https://cybersecurity.att.com/documentation/usm-anywhere/deployment-guide/azure/azure-enable-diagnostics.htm
+
+To enable diagnostics for your Azure web app
+
+1. Log in to your account at https://portal.azure.com/.
+2. Go to your Azure Web App and select Settings > Diagnostics logs.
+3. For Application Logging (Blob), click On and set the parameters.
+    - Set the Level for the logging.
+    - For Storage Settings, click > and select the Storage Account and Container.
+    This is the Storage Account and Container that Azure will use to store logs for the Web App. Make note of this information because you will need it to set up a log collection job in USM Anywhere. You can click + Storage Account to create a new storage account or container, or select an existing one.
+
+4. For Web server logging, select Storage.
+5. Click Storage Settings and select the same storage account and container that you set for the application logging.
+6. Click Save.
