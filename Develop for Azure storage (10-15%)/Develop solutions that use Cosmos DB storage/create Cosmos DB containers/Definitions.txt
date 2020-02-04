@@ -1,0 +1,30 @@
+COSMOS DB
+Item 1
+{
+    "familiyName": "Smith",
+    "address": {
+        "addressLine": "123 ever green",
+        "city": "Bogotá",
+        "state": "IL",
+        "zipCode": "60601"
+    },
+    "parents": [
+        "Peter",
+        "Alice"
+    ],
+    "kids": [
+        "Adam",
+        "Juan",
+        "Alexa"
+    ],
+}
+
+
+SELECT * FROM c
+WHERE c.address.city = "Bogotá"
+
+SELECT * FROM c
+WHERE IS_DEFINED(c.pets)
+
+SELECT * FROM c
+WHERE ARRAY_LENGTH(c.kids) > 2
