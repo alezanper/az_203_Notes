@@ -1,0 +1,30 @@
+Triggers 
+
+Triggers are what cause a function to run. A trigger defines how a function is invoked and a function must have exactly one trigger. Triggers have 
+associated data, which is often provided as the payload of the function.
+
+Examples: 
+
+- Http Request
+- Timer
+- Blob
+- Queue
+- Cosmos DB
+- Service Bus
+
+Bindings 
+
+Binding to a function is a way of declaratively connecting another resource to the function; bindings may be connected as input bindings, output 
+bindings, or both. Data from bindings is provided to the function as parameters.
+
+Input Binding
+-Blob, cosmos DB
+
+Output Bindings
+-Queue, sendgrid 
+
+It is defined on a json file
+
+Several built-in bindings 
+
+https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
