@@ -1,0 +1,15 @@
+-- Math
+
+SELECT
+ 9 * ((2 + 1) - 3) AS int,
+ 9.3 * ((2 + 1) - 3) AS dec
+
+-- Logic 
+
+SELECT
+ ("Alex" = "Alex" AND "Azure" = "Azuure" ) AS log1
+
+-- Ternary 
+
+SELECT
+ (10 > 5 ? "ten higher" : "five lower") AS t
