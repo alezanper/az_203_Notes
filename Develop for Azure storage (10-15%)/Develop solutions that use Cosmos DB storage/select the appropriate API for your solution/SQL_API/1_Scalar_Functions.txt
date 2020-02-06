@@ -1,0 +1,37 @@
+﻿
+-- Basic expressions
+
+SELECT "Alex"
+
+SELECT "Alex" AS word
+
+SELECT VALUE "Alex"
+
+SELECT "Alex", "Benavides"
+
+SELECT
+ "Alex" AS word1,
+ "Benavides" AS word2
+
+-- Nested arrays and embedded objects
+
+SELECT
+[
+  "Alex",
+  "Benavides"
+]
+ AS words
+
+SELECT
+{
+  "word1": "Alex",
+  "word2": "Benavides"
+}
+ AS words
+
+SELECT
+{
+  "words1": ["Alex", "Benavides"],
+  "words2": ["Studying", "Azure", "AZ-204"]
+}
+ AS all
