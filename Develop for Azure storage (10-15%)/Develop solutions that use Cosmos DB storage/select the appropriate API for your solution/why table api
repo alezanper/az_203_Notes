@@ -1,0 +1,9 @@
+Why table Api?
+
+1. migrate an existing azure table storage account over the cosmos db without having to change any code line 
+- just change the connection string
+
+2. Upgrade SDK (cosmos db table SDK uses native protocol)
+
+3. No advantage for new applications (Table API is a layer over SQL API)
+
